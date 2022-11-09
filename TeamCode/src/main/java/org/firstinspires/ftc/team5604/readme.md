@@ -1,8 +1,8 @@
-## TeamCode Module
+## team5604 Module
 
 Welcome!
 
-This module, TeamCode, is the place where you will write/paste the code for your team's
+This module, team5604, is the place where you will write/paste the code for your team's
 robot controller App. This module is currently empty (a clean slate) but the
 process for adding OpModes is straightforward.
 
@@ -52,7 +52,7 @@ After the prefix, other conventions will apply:
 
 Once you are familiar with the range of samples available, you can choose one to be the
 basis for your own robot.  In all cases, the desired sample(s) needs to be copied into
-your TeamCode module to be used.
+your team5604 module to be used.
 
 This is done inside Android Studio directly, using the following steps:
 
@@ -60,9 +60,9 @@ This is done inside Android Studio directly, using the following steps:
 
  2) Right click on the sample class and select "Copy"
 
- 3) Expand the  TeamCode/java folder
+ 3) Expand the  team5604/java folder
 
- 4) Right click on the org.firstinspires.ftc.teamcode folder and select "Paste"
+ 4) Right click on the org.firstinspires.ftc.team5604 folder and select "Paste"
 
  5) You will be prompted for a class name for the copy.
     Choose something meaningful based on the purpose of this class.
@@ -90,15 +90,15 @@ This line can simply be deleted , or commented out, to make the OpMode visible.
 
 
 
-## ADVANCED Multi-Team App management:  Cloning the TeamCode Module
+## ADVANCED Multi-Team App management:  Cloning the team5604 Module
 
 In some situations, you have multiple teams in your club and you want them to all share
 a common code organization, with each being able to *see* the others code but each having
 their own team module with their own code that they maintain themselves.
 
-In this situation, you might wish to clone the TeamCode module, once for each of these teams.
+In this situation, you might wish to clone the team5604 module, once for each of these teams.
 Each of the clones would then appear along side each other in the Android Studio module list,
-together with the FtcRobotController module (and the original TeamCode module).
+together with the FtcRobotController module (and the original team5604 module).
 
 Selective Team phones can then be programmed by selecting the desired Module from the pulldown list
 prior to clicking to the green Run arrow.
@@ -109,20 +109,20 @@ These changes are performed OUTSIDE of Android Studios, so close Android Studios
  
 Also.. Make a full project backup before you start this :)
 
-To clone TeamCode, do the following:
+To clone team5604, do the following:
 
 Note: Some names start with "Team" and others start with "team".  This is intentional.
 
-1)  Using your operating system file management tools, copy the whole "TeamCode"
+1)  Using your operating system file management tools, copy the whole "team5604"
     folder to a sibling folder with a corresponding new name, eg: "Team0417".
 
-2)  In the new Team0417 folder, delete the TeamCode.iml file.
+2)  In the new Team0417 folder, delete the team5604.iml file.
 
-3)  the new Team0417 folder, rename the "src/main/java/org/firstinspires/ftc/teamcode" folder
+3)  the new Team0417 folder, rename the "src/main/java/org/firstinspires/ftc/team5604" folder
     to a matching name with a lowercase 'team' eg:  "team0417".
 
 4)  In the new Team0417/src/main folder, edit the "AndroidManifest.xml" file, change the line that contains
-         package="org.firstinspires.ftc.teamcode"
+         package="org.firstinspires.ftc.team5604"
     to be
          package="org.firstinspires.ftc.team0417"
 
