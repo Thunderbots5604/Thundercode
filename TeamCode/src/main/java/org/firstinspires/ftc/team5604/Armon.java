@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.team5604;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,6 +40,7 @@ public class Armon {
             armMotor2.setVelocity(armMotor.getPower() - Values.power);
             return false;
         }
+        return false;
     }
     //how to use :)
     //while(!moveToTarget){
