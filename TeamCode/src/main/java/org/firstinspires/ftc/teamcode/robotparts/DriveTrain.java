@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team5604.robotparts;
+package org.firstinspires.ftc.teamcode.robotparts;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,13 +14,7 @@ public class DriveTrain {
     private double backLeftPower;
     private double backRightPower;
 
-    //store current motor ticks
-    private int flTickZero;
-    private int frTickZero;
-    private int blTickZero;
-    private int brTickZero;
-
-    public DriveTrain(HardwareMap map, String flMotor, String frMotor, String blMotor, String brMotor) {
+    public DriveTrain(HardwareMap map, String flMotor, String frMotor, String blMotor, String brMotor){
         frontLeftMotor = map.get(DcMotor.class, flMotor);
         frontRightMotor = map.get(DcMotor.class, frMotor);
         backLeftMotor = map.get(DcMotor.class, blMotor);
@@ -30,12 +24,6 @@ public class DriveTrain {
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //set to break
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -56,8 +44,6 @@ public class DriveTrain {
         frontRightPower = y - x - turn;
         backRightPower = y + x - turn;
     }
-
-//fr and bl go backwards, vice versa
 
     public void normalizePowers() {
         double max = Math.max(Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)), Math.max(Math.abs(backLeftPower), Math.abs(backRightPower)));
@@ -88,25 +74,6 @@ public class DriveTrain {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-    }
-
-    //sets the current tick values as the new zero values for ticks
-    public void setZeroTicks() {
-        flTickZero = frontLeftMotor.getCurrentPosition();
-        frTickZero = frontRightMotor.getCurrentPosition();
-        blTickZero = backLeftMotor.getCurrentPosition();
-        brTickZero = backRightMotor.getCurrentPosition();
-    }
-
-    public int[] getTickChange() {
-        int[] change = new int[4];
-
-        change[0] = frontLeftMotor.getCurrentPosition() - flTickZero;
-        change[1] = frontRightMotor.getCurrentPosition() - frTickZero;
-        change[2] = backLeftMotor.getCurrentPosition() - blTickZero;
-        change[3] = backRightMotor.getCurrentPosition() - brTickZero;
-
-        return change;
     }
 }
 
