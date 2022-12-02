@@ -12,8 +12,12 @@ public class BlueAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         camera = new DetectSignalSleeve(hardwareMap, telemetry, this);
-        int parkingSpot = camera.findRegion();
+        int parkingSpot;
         drive = new DriveTrain(hardwareMap, "fl", "fr", "bl", "br");
         waitForStart();
+
+        parkingSpot = camera.findRegion();
+
+
     }
 }
