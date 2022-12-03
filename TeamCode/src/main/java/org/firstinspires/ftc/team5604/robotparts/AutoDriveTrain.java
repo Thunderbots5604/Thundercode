@@ -23,23 +23,26 @@ public class AutoDriveTrain extends DriveTrain {
         this.X_SCALE = X_SCALE;
         this.Y_SCALE = Y_SCALE;
         this.ANGLE_SCALE = ANGLE_SCALE;
+        setZeroTicks();
     }
 
     public void setTargetLocation(double[] location) {
         targetLocation = location.clone();
     }
 
-    public boolean moveToTargetLocation() {
+    public boolean moveToTargetLocation(double power) {
         if(positionWithin(currentLocation, targetLocation, epsilons)) {
             setPowersToZero();
             pushPowers();
             return true;
         }
 
-        double[] targetDirections = rotateDirections(positionDifference(currentLocation, targetLocation));
+        double[] targetDirections = rotateDirections(positionDifference(targetLocation, currentLocation));
 
+        targetDirections[2] *= -1;
         calculatePower(targetDirections);
         normalizePowers();
+        scalePowers(power);
         pushPowers();
 
         return false;
@@ -52,7 +55,7 @@ public class AutoDriveTrain extends DriveTrain {
 
         relativeChange[0] = X_SCALE * (tickChange[0] - tickChange[1] - tickChange[2] + tickChange[3]);
         relativeChange[1] = Y_SCALE * (tickChange[0] + tickChange[1] + tickChange[2] + tickChange[3]);
-        relativeChange[2] = ((ANGLE_SCALE * (tickChange[0] - tickChange[1] + tickChange[2] - tickChange[3])) % (2 * Math.PI)) - Math.PI;
+        relativeChange[2] = /*((ANGLE_SCALE * (tickChange[0] + tickChange[1] + tickChange[2] - tickChange[3])) % (2 * Math.PI)) - Math.PI*/ 0;
 
         double[] absoluteChange = rotateDirections(relativeChange);
 
@@ -115,5 +118,9 @@ public class AutoDriveTrain extends DriveTrain {
             }
         }
         return angle;
+    }
+
+    public double[] getCurrentLocation() {
+        return currentLocation.clone();
     }
 }

@@ -96,7 +96,7 @@ public class DetectSignalSleeve extends LinearOpMode
                 location = 3;
                 break;
             default:
-                location = 0;
+                location = 2;
                 break;
         }
         telemetry.addData("Detected location", location);
@@ -133,9 +133,9 @@ public class DetectSignalSleeve extends LinearOpMode
          * The core values which define the location and size of the sample regions
          */
         //Calibrate region
-        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(0,0);
-        static final int REGION_WIDTH = 20;
-        static final int REGION_HEIGHT = 40;
+        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(128,105);
+        static final int REGION_WIDTH = 60;
+        static final int REGION_HEIGHT = 80;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values

@@ -4,13 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.team5604.robotparts.DriveTrain;
-import org.firstinspires.ftc.team5604.robotparts.Armon;
+import org.firstinspires.ftc.team5604.robotparts.Armon2;
 import org.firstinspires.ftc.team5604.robotparts.Claw;
 
 @TeleOp(name = "Alpha", group = "competition")
 public class TeleOpAlpha extends OpMode {
     DriveTrain drive;
-    Armon arm;
+    Armon2 arm;
     Claw claw;
 
     boolean doneInit = false;
@@ -24,6 +24,12 @@ public class TeleOpAlpha extends OpMode {
     boolean halfSpeed;
     double multiplier;
 
+    boolean pastTriggered = false;
+    boolean currentRightTrigger = false;
+    boolean currentLeftTrigger = false;
+    double rightTriggerValue = 0;
+    double leftTriggerValue = 0;
+
     @Override
     public void start() {
         while(!doneInit){}
@@ -33,7 +39,7 @@ public class TeleOpAlpha extends OpMode {
     @Override
     public void init() {
         drive = new DriveTrain(hardwareMap, "fl", "fr", "bl", "br");
-        arm = new Armon(hardwareMap, "am1", "am2", 10, 1200, 0.05);
+        arm = new Armon2(hardwareMap, "am1", "am2", 10, 1100, 0.05);
         claw = new Claw(hardwareMap, "claw", 0.85, 1);
         doneInit = true;
     }
@@ -68,14 +74,32 @@ public class TeleOpAlpha extends OpMode {
         }
         pastA = currentA;
 
-        if(gamepad1.right_trigger > 0.5) {
-            arm.incrementTargetPosition();
+        rightTriggerValue = gamepad1.right_trigger;
+        leftTriggerValue = gamepad1.left_trigger;
+        if(rightTriggerValue > 0.5) {
+            currentRightTrigger = true;
         }
-        else if(gamepad1.left_trigger > 0.5) {
-            arm.decrementTargetPosition();
+        else if(leftTriggerValue > 0.5) {
+            currentLeftTrigger = true;
         }
 
-        arm.moveToTarget();
+        if(currentRightTrigger) {
+            arm.move(600 * ((4.0 / 3) * (rightTriggerValue - 0.25)));
+        }
+        else if(currentLeftTrigger) {
+            arm.move(600 * ((-4.0 / 3) * (leftTriggerValue - 0.25)));
+        }
+
+        if(!(currentLeftTrigger || currentRightTrigger)) {
+            if(!pastTriggered) {
+                arm.lock();
+            }
+            arm.moveToTarget();
+        }
+
+        pastTriggered = currentRightTrigger || currentLeftTrigger;
+        currentRightTrigger = false;
+        currentLeftTrigger = false;
     }
 
     @Override

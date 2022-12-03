@@ -69,6 +69,13 @@ public class DriveTrain {
         }
     }
 
+    public void scalePowers(double scale) {
+        frontLeftPower *= scale;
+        frontRightPower *= scale;
+        backLeftPower *= scale;
+        backRightPower *= scale;
+    }
+
     public void setPowersToZero() {
         frontLeftPower = 0;
         frontRightPower = 0;
@@ -109,4 +116,3 @@ public class DriveTrain {
         return change;
     }
 }
-
