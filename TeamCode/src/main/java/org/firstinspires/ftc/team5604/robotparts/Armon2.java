@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.team5604.robotparts;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,17 +8,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Armon2 {
     private DcMotorEx armMotor;
     private DcMotorEx armMotor2;
-
+    
     private double positionModifier;
     private double targetPosition;
     private double powerIncrement;
-
+    
     private double actualPosition;
     private double powerDecrement;
-
+    
     private double armMotorCurrentPower;
     private double armMotor2CurrentPower;
-
+    
     public final double TARGET_INCREMENT;
     public final double MAX_POSITION;
 
@@ -34,18 +35,18 @@ public class Armon2 {
         armMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        
         TARGET_INCREMENT = positionIncrement;
         MAX_POSITION = maxPosition;
         this.powerIncrement = powerIncrement;
-
+        
         positionModifier = (armMotor.getCurrentPosition() + armMotor2.getCurrentPosition()) / 2.0;
         targetPosition = getCurrentPosition();
-
+        
         armMotorCurrentPower = 0;
         armMotor2CurrentPower = 0;
     }
-
+    
     public void move(double velocity) {
         if((velocity > 0 && getCurrentPosition() > MAX_POSITION) || (velocity < 0 && getCurrentPosition() < -50)) {
             armMotor.setVelocity(1);
@@ -56,7 +57,7 @@ public class Armon2 {
             armMotor2.setVelocity(velocity);
         }
     }
-
+    
     public void lock() {
         setTargetPosition(getCurrentPosition());
     }
@@ -80,30 +81,30 @@ public class Armon2 {
             return false;
         }
     }
-
+    
     public double getCurrentPosition() {
         return ((armMotor.getCurrentPosition() + armMotor2.getCurrentPosition()) / 2.0) - positionModifier;
     }
-
+    
     public void setZeroPosition() {
         positionModifier = armMotor.getCurrentPosition() + armMotor2.getCurrentPosition() / 2.0;
         targetPosition = getCurrentPosition();
     }
-
+    
     public void incrementTargetPosition() {
         if(!(targetPosition > MAX_POSITION)) {
             targetPosition += TARGET_INCREMENT;
         }
     }
-
+    
     public void decrementTargetPosition() {
         if(targetPosition + 50 > TARGET_INCREMENT) {
             targetPosition -= TARGET_INCREMENT;
         }
     }
-
+    
     //how to use :)
-    //Value set to hold
+    //Value set to hold 
     public void hold()
     {
         armMotor.setPower(0.05);
@@ -119,11 +120,11 @@ public class Armon2 {
     public void setTargetPosition(double target) {
         targetPosition = target;
     }
-
+    
     public double getTargetPosition(double target) {
         return targetPosition;
     }
-
+    
     public double getModifier() {
         return positionModifier;
     }

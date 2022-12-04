@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team5604;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team5604.robotparts.DriveTrain;
 import org.firstinspires.ftc.team5604.robotparts.Armon2;
@@ -12,9 +13,9 @@ public class TeleOpAlpha extends OpMode {
     DriveTrain drive;
     Armon2 arm;
     Claw claw;
-
+    
     boolean doneInit = false;
-
+    
     boolean pastBack = false;
     boolean currentBack;
     boolean pastA = false;
@@ -23,7 +24,7 @@ public class TeleOpAlpha extends OpMode {
     boolean currentB;
     boolean halfSpeed;
     double multiplier;
-
+    
     boolean pastTriggered = false;
     boolean currentRightTrigger = false;
     boolean currentLeftTrigger = false;
@@ -48,7 +49,7 @@ public class TeleOpAlpha extends OpMode {
     public void loop() {
         telemetry.addData("position", Double.toString(arm.getCurrentPosition() - arm.getModifier()));
         telemetry.update();
-
+        
         currentB = gamepad1.b;
         if(currentB && !pastB) {
             halfSpeed = !halfSpeed;
@@ -56,24 +57,24 @@ public class TeleOpAlpha extends OpMode {
         pastB = currentB;
 
         multiplier = halfSpeed ? 0.5 : 1;
-
+        
         drive.setPowersToZero();
         drive.calculatePower(new double[] {multiplier * gamepad1.left_stick_x, -multiplier * gamepad1.left_stick_y, multiplier * gamepad1.right_stick_x});
         drive.normalizePowers();
         drive.pushPowers();
-
+        
         currentBack = gamepad1.back;
         if(currentBack && !pastBack) {
-            arm.setZeroPosition();
+            //arm.setZeroPosition();
         }
         pastBack = currentBack;
-
+        
         currentA = gamepad1.a;
         if(currentA && !pastA) {
             claw.toggle();
         }
         pastA = currentA;
-
+        
         rightTriggerValue = gamepad1.right_trigger;
         leftTriggerValue = gamepad1.left_trigger;
         if(rightTriggerValue > 0.5) {
@@ -82,21 +83,21 @@ public class TeleOpAlpha extends OpMode {
         else if(leftTriggerValue > 0.5) {
             currentLeftTrigger = true;
         }
-
+        
         if(currentRightTrigger) {
             arm.move(600 * ((4.0 / 3) * (rightTriggerValue - 0.25)));
         }
         else if(currentLeftTrigger) {
             arm.move(600 * ((-4.0 / 3) * (leftTriggerValue - 0.25)));
         }
-
+        
         if(!(currentLeftTrigger || currentRightTrigger)) {
             if(!pastTriggered) {
                 arm.lock();
             }
             arm.moveToTarget();
         }
-
+        
         pastTriggered = currentRightTrigger || currentLeftTrigger;
         currentRightTrigger = false;
         currentLeftTrigger = false;

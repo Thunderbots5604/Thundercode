@@ -94,7 +94,7 @@ public class AutoDriveTrain extends DriveTrain {
 
         difference[0] = current[0] - target[0];
         difference[1] = current[1] - target[1];
-        difference[2] = subtractAngle(current[2], target[2]);
+        difference[2] = addAngle(current[2], -target[2]);
 
         return difference;
     }

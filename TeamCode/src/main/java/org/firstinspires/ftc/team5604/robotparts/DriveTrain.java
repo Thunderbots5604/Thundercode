@@ -68,7 +68,7 @@ public class DriveTrain {
             backRightPower /= max;
         }
     }
-
+    
     public void scalePowers(double scale) {
         frontLeftPower *= scale;
         frontRightPower *= scale;
