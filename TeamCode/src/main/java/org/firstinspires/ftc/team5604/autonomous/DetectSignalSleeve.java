@@ -133,9 +133,9 @@ public class DetectSignalSleeve extends LinearOpMode
          * The core values which define the location and size of the sample regions
          */
         //Calibrate region
-        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(148,122);
+        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(0,0);
         static final int REGION_WIDTH = 20;
-        static final int REGION_HEIGHT = 34;
+        static final int REGION_HEIGHT = 40;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -296,9 +296,9 @@ public class DetectSignalSleeve extends LinearOpMode
             // Find which color the measured hue was closest to
             if (min == accRed) {
                 scan = SignalRegion.ONE;
-            } else if (min == accBlue) {
-                scan = SignalRegion.TWO;
             } else if (min == accGreen) {
+                scan = SignalRegion.TWO;
+            } else if (min == accBlue) {
                 scan = SignalRegion.THREE;
             }
             /*

@@ -1,36 +1,35 @@
-package org.firstinspires.ftc.team5604.autonomous.blueside;
+package org.firstinspires.ftc.team5604.autonomous.RedSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team5604.autonomous.DetectSignalSleeve;
-import org.firstinspires.ftc.team5604.robotparts.DriveTrain;
+import org.firstinspires.ftc.team5604.robotparts.AutoDriveTrain;
 import org.firstinspires.ftc.team5604.robotparts.Claw;
-import org.firstinspires.ftc.team5604.robotparts.Armon;
+import org.firstinspires.ftc.team5604.robotparts.Armon2;
+import org.firstinspires.ftc.team5604.Values;
 
-@Autonomous(name = "BlueNearCap", group = "Autonomous")
-public class BlueNearCap extends LinearOpMode {
+@Autonomous(name = "RedLeft", group = "Autonomous")
+public class RedLeft extends LinearOpMode {
+    private AutoDriveTrain driveTrain;
     private DetectSignalSleeve camera;
     private int location;
-    private Armon arm;
+    private Armon2 arm;
     private Claw claw;
-    private DriveTrain drive;
+    private AutoDriveTrain drive;
     private ElapsedTime timer;
 
-    /*
-    private RobotPosition[] positions = new RobotPosition[] {
-        new RobotPosition(start),
-        new RobotPosition(storage),
-        new RobotPosition(pole)
-    }
+    private final double ARM_STARTING_HEIGHT = 100;
+    private final double ARM_POLE_HEIGHT = 1100;
+//    private final int NUM_CYCLES = 2;
 
-    private RobotPosition[] parkPositions = new RobotPosition[] {
-        new RobotPosition(first),
-        new RobotPosition(second),
-        new RobotPosition(third),
-    }
-     */
+
+    private double[][] positions = {{-Values.TILE_LENGTH, Values.TILE_LENGTH * 2.5, Math.PI/4},
+                                        {0, Values.TILE_LENGTH * 3, -Math.PI/4}}; //[0]=storage, [1]=pole
+
+    private double[][] parkPositions = {{-3100, 200, 0}, {0, 2700, 0}, {3100, 2700, 0}};
+
 
     enum DrivePosition {
         POSITION_START,
@@ -77,31 +76,34 @@ public class BlueNearCap extends LinearOpMode {
         location = camera.findRegion();
         sleep(500);
         timer = new ElapsedTime();
+
         while (opModeIsActive()) {
             switch (drivePosition) {
                 case POSITION_START:
-                    /*
-                    drive to positions[1]
-                     */
-                    drivePosition = DrivePosition.POSITION_TOSTORAGE;
+                    drive.setTargetLocation(new double[] {0, 200, 0}); //so robot doesn't scratch wall
+                    if(!drive.moveToTargetLocation(.5)) {
+                        drive.updateCurrentLocation();
+                    } else {
+                        drivePosition = DrivePosition.POSITION_TOSTORAGE;
+                    }
                     break;
                 case POSITION_TOSTORAGE:
-                    /*
-                    do an if check for if the robot has reached the storage
-                     */
-                    if (true) {
+                    drive.setTargetLocation(positions[0]);
+                    if(!drive.moveToTargetLocation(.5)) {
+                        drive.updateCurrentLocation();
+                    } else {
                         drivePosition = DrivePosition.POSITION_STORAGE;
-                        clawState = ClawState.CLAW_STORAGE;
                     }
                     break;
                 case POSITION_STORAGE:
+                    clawState = ClawState.CLAW_STORAGE;
                     drive.stop();
                     break;
                 case POSITION_TOPOLE:
-                    /*
-                    drive to positions[2], check if reached
-                     */
-                    if (true) {
+                    drive.setTargetLocation(positions[1]);
+                    if(!drive.moveToTargetLocation(.5)) {
+                        drive.updateCurrentLocation();
+                    } else {
                         armState = ArmState.ARM_POLE;
                         drivePosition = DrivePosition.POSITION_POLE;
                     }
@@ -110,37 +112,15 @@ public class BlueNearCap extends LinearOpMode {
                     drive.stop();
                     break;
                 case POSITION_TOPARK:
-                    switch (location) {
-                        case 1:
-                            /*
-                            drive to parkPositions[0]
-                             */
-                            break;
-                        case 2:
-                            /*
-                            drive to parkPositions[1]
-                             */
-                            break;
-                        case 3:
-                            /*
-                            drive to parkPositions[2]
-                             */
-                            break;
-                        default:
-                            /*
-                            cry about it
-                             */
-                            break;
+                    drive.setTargetLocation(parkPositions[location-1]);
+                    if(!drive.moveToTargetLocation(.5)){
+                        drive.updateCurrentLocation();
+                    } else {
+                        drivePosition = DrivePosition.POSITION_PARK;
                     }
-                    drivePosition = DrivePosition.POSITION_PARK;
                     break;
                 case POSITION_PARK:
-                    /*
-                    if statement if robot has reached park position
-                     */
-                    if (true) {
-                        complete[0] = true;
-                    }
+                    complete[0] = true;
                     break;
                 default:
                     drivePosition = DrivePosition.POSITION_START;
@@ -148,37 +128,34 @@ public class BlueNearCap extends LinearOpMode {
             }
             switch (armState) {
                 case ARM_START:
-                    /*
-                    send instruction to raise arm to cone level
-                     */
                     armState = ArmState.ARM_TOSTORAGE;
                     break;
                 case ARM_TOSTORAGE:
-                    armState = ArmState.ARM_STORAGE;
+                    arm.setTargetPosition(ARM_STARTING_HEIGHT);
+                    if(arm.moveToTarget()){
+                        armState = ArmState.ARM_STORAGE;
+                    }
                     break;
                 case ARM_STORAGE:
-                    //wait
+                    arm.lock();
+                    arm.moveToTarget();
                     break;
                 case ARM_TOPOLE:
-                    /*
-                    raise arm to pole level, do if check for when high enough
-                     */
-                    if (true) {
-                        drivePosition = DrivePosition.POSITION_TOPOLE;
+                    arm.setTargetPosition(ARM_POLE_HEIGHT);
+                    if(arm.moveToTarget()){
+                        armState = ArmState.ARM_POLE;
                     }
                     break;
                 case ARM_POLE:
-                    /*
-                    lower arm slightly so that cone falls snugly
-                     */
                     clawState = ClawState.CLAW_POLE;
-                    armState = ArmState.ARM_TOPARK;
+                    arm.lock();
+                    arm.moveToTarget();
                     break;
                 case ARM_TOPARK:
-                    /*
-                    return arm to starting compact position
-                     */
-                    armState = ArmState.ARM_PARK;
+                    arm.setTargetPosition(0);
+                    if(arm.moveToTarget()){
+                        armState = ArmState.ARM_PARK;
+                    }
                     break;
                 case ARM_PARK:
                     complete[1] = true;
@@ -189,29 +166,38 @@ public class BlueNearCap extends LinearOpMode {
             }
             switch (clawState) {
                 case CLAW_START:
-                    /*
-                    open claw
-                     */
+                    claw.open();
                     clawState = ClawState.CLAW_TOSTORAGE;
                     break;
                 case CLAW_TOSTORAGE:
                     //wait
                     break;
                 case CLAW_STORAGE:
-                    /*
-                    close claw
-                     */
-                    armState = ArmState.ARM_TOPOLE;
-                    clawState = ClawState.CLAW_TOPOLE;
+                    //closes claw only when both the arm is at the correct height and the robot is at
+                    //the right location (since POSITION_STORAGE leads to CLAW_STORAGE, we can assume
+                    //that the robot is already at the correct location; this if statement is only
+                    //to check if the arm is at the storage)
+                    if(armState == ArmState.ARM_STORAGE){
+                        claw.close();
+                        armState = ArmState.ARM_TOPOLE;
+                        clawState = ClawState.CLAW_TOPOLE;
+                        drivePosition = DrivePosition.POSITION_TOPOLE;
+                    }
                     break;
                 case CLAW_TOPOLE:
                     //wait
                     break;
                 case CLAW_POLE:
-                    /*
-                    open claw
-                     */
-                    clawState = ClawState.CLAW_TOPARK;
+                    //opens claw only when both the arm is at the correct height and the robot is at
+                    //the pole (since ARM_POLE leads to CLAW_POLE, we can assume that the arm is already
+                    //at the correct height; this if statement is only to check if the robot itself
+                    //is at POSITION_POLE)
+                    if(drivePosition == DrivePosition.POSITION_POLE) {
+                        claw.open();
+                        clawState = ClawState.CLAW_TOPARK;
+                        armState = ArmState.ARM_TOPARK;
+                        drivePosition = DrivePosition.POSITION_TOPARK;
+                    }
                     break;
                 case CLAW_TOPARK:
                     clawState = ClawState.CLAW_PARK;
