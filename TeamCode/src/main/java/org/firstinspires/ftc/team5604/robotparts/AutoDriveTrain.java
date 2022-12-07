@@ -109,15 +109,18 @@ public class AutoDriveTrain extends DriveTrain {
 
     //angles are in radians and is between -pi and +pi
     public double addAngle(double angle1, double angle2) {
-        double angle = angle1 + angle2;
-        if (Math.abs(angle) > Math.PI) {
-            if (angle > Math.PI) {
-                angle -= Math.PI * 2;
-            } else if ((-1) * angle > Math.PI) {
-                angle += Math.PI * 2;
-            }
+        double norm1, norm2;
+        if (angle1 > 0) {
+            norm1 = Math.floor(angle1 / Math.PI) * Math.PI + angle1;
+        } else {
+            norm1 = Math.ceil(angle1 / Math.PI) * Math.PI + angle1;
         }
-        return angle;
+        if (angle2 > 0) {
+            norm2 = Math.floor(angle2 / Math.PI) * Math.PI + angle2;
+        } else {
+            norm2 = Math.ceil(angle2 / Math.PI) * Math.PI + angle2;
+        }
+        return norm1 + norm2;
     }
 
     public double[] getCurrentLocation() {
