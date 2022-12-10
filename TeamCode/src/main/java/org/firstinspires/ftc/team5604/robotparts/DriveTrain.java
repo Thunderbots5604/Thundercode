@@ -26,6 +26,11 @@ public class DriveTrain {
         backLeftMotor = map.get(DcMotor.class, blMotor);
         backRightMotor = map.get(DcMotor.class, brMotor);
 
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -68,7 +73,7 @@ public class DriveTrain {
             backRightPower /= max;
         }
     }
-    
+
     public void scalePowers(double scale) {
         frontLeftPower *= scale;
         frontRightPower *= scale;

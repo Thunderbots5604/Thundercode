@@ -225,7 +225,7 @@ public class RedLeft extends LinearOpMode {
                     break;
             }
             telemetry.update();
-            if (complete.equals(new boolean[] {true, true, true})) {
+            if (complete[0] && complete[1] && complete[2]) {
                 stop();
             }
         }

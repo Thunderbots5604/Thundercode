@@ -11,12 +11,12 @@ public class AutoTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        drive = new AutoDriveTrain(hardwareMap, "fl", "fr", "bl", "br", new double[] {100, 100, 1}, 1, 1, 0.01);
-        double[] target = new double[] {0, 0, 3};
+        drive = new AutoDriveTrain(hardwareMap, "fl", "fr", "bl", "br", new double[] {50, 50, .05}, .25, .25, -0.002);
+        double[] target = new double[] {500, -1000, Math.PI / 3};
         drive.setTargetLocation(target);
         double[] position;
         waitForStart();
-        while(!drive.moveToTargetLocation(.35)) {
+        while(!drive.moveToTargetLocation(.75)) {
             drive.updateCurrentLocation();
             position = drive.getCurrentLocation();
             telemetry.addData("x", position[0]);
@@ -24,5 +24,7 @@ public class AutoTest extends LinearOpMode {
             telemetry.addData("Angle", position[2]);
             telemetry.update();
         }
+
+        sleep(10000);
     }
 }
