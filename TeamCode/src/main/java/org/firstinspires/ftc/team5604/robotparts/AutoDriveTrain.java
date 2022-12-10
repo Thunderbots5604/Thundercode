@@ -31,13 +31,33 @@ public class AutoDriveTrain extends DriveTrain {
     }
 
     public boolean moveToTargetLocation(double power) {
-        if(positionWithin(currentLocation, targetLocation, epsilons)) {
-            setPowersToZero();
-            pushPowers();
-            return true;
+        double[] targetDirections = new double[3];
+
+        if(Math.abs(currentLocation[0] - targetLocation[0]) < epsilons[0] && Math.abs(currentLocation[1] - targetLocation[1]) < epsilons[1]) {
+            if(Math.abs(addAngle(currentLocation[2], -targetLocation[2])) < epsilons[2]) {
+                setPowersToZero();
+                pushPowers();
+                return true;
+            }
+            else {
+                targetDirections[0] = 0;
+                targetDirections[1] = 0;
+                targetDirections[2] = addAngle(targetLocation[2], -currentLocation[2]);
+
+                targetDirections[2] *= -1;
+                calculatePower(targetDirections);
+                normalizePowers();
+                scalePowers(power);
+                pushPowers();
+
+                return false;
+            }
         }
 
-        double[] targetDirections = rotateDirections(positionDifference(targetLocation, currentLocation));
+        targetDirections = rotateDirections(positionDifference(targetLocation, currentLocation), -currentLocation[2]);
+        double scale = (1 / Math.PI) * Math.sqrt(targetDirections[0] * targetDirections[0] + targetDirections[1] * targetDirections[1]);
+        targetDirections[0] /= scale;
+        targetDirections[1] /= scale;
 
         targetDirections[2] *= -1;
         calculatePower(targetDirections);
@@ -55,20 +75,20 @@ public class AutoDriveTrain extends DriveTrain {
 
         relativeChange[0] = X_SCALE * (tickChange[0] - tickChange[1] - tickChange[2] + tickChange[3]);
         relativeChange[1] = Y_SCALE * (tickChange[0] + tickChange[1] + tickChange[2] + tickChange[3]);
-        relativeChange[2] = /*((ANGLE_SCALE * (tickChange[0] + tickChange[1] + tickChange[2] - tickChange[3])) % (2 * Math.PI)) - Math.PI*/ 0;
+        relativeChange[2] = ANGLE_SCALE * (tickChange[0] - tickChange[1] + tickChange[2] - tickChange[3]);
 
-        double[] absoluteChange = rotateDirections(relativeChange);
+        double[] absoluteChange = rotateDirections(relativeChange, currentLocation[2]);
 
         currentLocation[0] += absoluteChange[0];
         currentLocation[1] += absoluteChange[1];
         currentLocation[2] = addAngle(currentLocation[2], absoluteChange[2]);
     }
 
-    public double[] rotateDirections(double[] directions) {
+    public double[] rotateDirections(double[] directions, double angle) {
         double[] newDirections = new double[3];
 
-        newDirections[0] = directions[0] * Math.cos(currentLocation[2]) - directions[1] * Math.sin(currentLocation[2]);
-        newDirections[1] = directions[0] * Math.sin(currentLocation[2]) + directions[1] * Math.cos(currentLocation[2]);
+        newDirections[0] = directions[0] * Math.cos(angle) - directions[1] * Math.sin(angle);
+        newDirections[1] = directions[0] * Math.sin(angle) + directions[1] * Math.cos(angle);
         newDirections[2] = directions[2];
 
         return newDirections;
@@ -99,28 +119,17 @@ public class AutoDriveTrain extends DriveTrain {
         return difference;
     }
 
-    public double subtractAngle(double angle1, double angle2) {
-        double difference = addAngle(angle1, -angle2);
-        if (Math.abs(difference) > Math.PI / 2) {
-            difference -= Math.signum(difference) * Math.PI / 2;
-        }
-        return difference;
-    }
-
     //angles are in radians and is between -pi and +pi
     public double addAngle(double angle1, double angle2) {
-        double norm1, norm2;
-        if (angle1 > 0) {
-            norm1 = Math.floor(angle1 / Math.PI) * Math.PI + angle1;
-        } else {
-            norm1 = Math.ceil(angle1 / Math.PI) * Math.PI + angle1;
+        double sum = angle1 + angle2;
+        if(sum > Math.PI) {
+            sum -= Math.PI;
         }
-        if (angle2 > 0) {
-            norm2 = Math.floor(angle2 / Math.PI) * Math.PI + angle2;
-        } else {
-            norm2 = Math.ceil(angle2 / Math.PI) * Math.PI + angle2;
+        if(sum < -Math.PI) {
+            sum += Math.PI;
         }
-        return norm1 + norm2;
+
+        return sum;
     }
 
     public double[] getCurrentLocation() {
