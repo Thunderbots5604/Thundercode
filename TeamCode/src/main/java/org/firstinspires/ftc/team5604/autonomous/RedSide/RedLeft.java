@@ -22,7 +22,7 @@ public class RedLeft extends LinearOpMode {
 
     private final double ARM_STARTING_HEIGHT = 100;
     private final double ARM_POLE_HEIGHT = 1100;
-//    private final int NUM_CYCLES = 2;
+    private int NUM_CYCLES = 0;
 
 
     private double[][] positions = {{-Values.TILE_LENGTH, Values.TILE_LENGTH * 2.5, Math.PI/4},
@@ -81,6 +81,14 @@ public class RedLeft extends LinearOpMode {
             switch (drivePosition) {
                 case POSITION_START:
                     drive.setTargetLocation(new double[] {0, 200, 0}); //so robot doesn't scratch wall
+
+                    //if we don't want any cycles, we just directly go park
+                    if(NUM_CYCLES == 0){
+                        clawState = ClawState.CLAW_TOPARK;
+                        armState = ArmState.ARM_TOPARK;
+                        drivePosition = DrivePosition.POSITION_TOPARK;
+                    }
+
                     if(!drive.moveToTargetLocation(.5)) {
                         drive.updateCurrentLocation();
                     } else {
@@ -194,6 +202,13 @@ public class RedLeft extends LinearOpMode {
                     //is at POSITION_POLE)
                     if(drivePosition == DrivePosition.POSITION_POLE) {
                         claw.open();
+                    }
+                    if(NUM_CYCLES - 1 >= 0){
+                        NUM_CYCLES--;
+                        clawState = ClawState.CLAW_TOSTORAGE;
+                        armState = ArmState.ARM_TOSTORAGE;
+                        drivePosition = DrivePosition.POSITION_TOSTORAGE;
+                    } else {
                         clawState = ClawState.CLAW_TOPARK;
                         armState = ArmState.ARM_TOPARK;
                         drivePosition = DrivePosition.POSITION_TOPARK;
