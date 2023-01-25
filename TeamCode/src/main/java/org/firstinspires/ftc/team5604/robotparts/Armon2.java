@@ -103,7 +103,8 @@ public class Armon2 {
         }
     }
     
-    //Value set to hold
+    //how to use :)
+    //Value set to hold 
     public void hold()
     {
         armMotor.setPower(0.05);

@@ -4,15 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.team5604.robotparts.DriveTrain;
+import org.firstinspires.ftc.team5604.robotparts.AutoDriveTrainGyro;
 import org.firstinspires.ftc.team5604.robotparts.Armon2;
 import org.firstinspires.ftc.team5604.robotparts.Claw;
 
-@TeleOp(name = "Alpha", group = "competition")
-public class TeleOpAlpha extends OpMode {
-    DriveTrain drive;
+import org.firstinspires.ftc.team5604.robotparts.Gyro;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
+@TeleOp(name = "Closed Claw Headless", group = "outreach")
+public class TeleOpClosedClawHeadless extends OpMode {
+    AutoDriveTrainGyro drive;
     Armon2 arm;
     Claw claw;
+    Gyro gyro;
     
     boolean doneInit = false;
     
@@ -39,9 +43,10 @@ public class TeleOpAlpha extends OpMode {
 
     @Override
     public void init() {
-        drive = new DriveTrain(hardwareMap, "fl", "fr", "bl", "br");
         arm = new Armon2(hardwareMap, "am1", "am2", 10, 1150, 0.05);
-        claw = new Claw(hardwareMap, "claw", 0.85, 1);
+        claw = new Claw(hardwareMap, "claw", 0.85, 0.95);
+        gyro = new Gyro(hardwareMap);
+        drive = new AutoDriveTrainGyro(hardwareMap, "fl", "fr", "bl", "br", new double[] {Values.LATERAL_ERROR, Values.LONGITUDINAL_ERROR, 0.01}, Values.INCHES_PER_TICK_LATERAL, Values.INCHES_PER_TICK_LONGITUDINAL, Values.RADIANS_PER_TICK, gyro);
         doneInit = true;
     }
 
@@ -50,17 +55,23 @@ public class TeleOpAlpha extends OpMode {
         telemetry.addData("position", Double.toString(arm.getCurrentPosition() - arm.getModifier()));
         telemetry.update();
         
+        claw.close();
+        
+        drive.updateCurrentLocation();
+        
         currentB = gamepad1.b;
         if(currentB && !pastB) {
             halfSpeed = !halfSpeed;
         }
         pastB = currentB;
 
-        multiplier = halfSpeed ? 0.5 : 1;
+        multiplier = halfSpeed ? 0.375 : 0.75;
         
         drive.setPowersToZero();
-        drive.calculatePower(new double[] {multiplier * gamepad1.left_stick_x, -multiplier * gamepad1.left_stick_y, multiplier * gamepad1.right_stick_x});
+        double[] directions = drive.rotateDirections(new double[] {gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x}, -drive.getCurrentLocation()[2]);
+        drive.calculatePower(directions);
         drive.normalizePowers();
+        drive.scalePowers(multiplier);
         drive.pushPowers();
         
         currentBack = gamepad1.back;
@@ -70,9 +81,9 @@ public class TeleOpAlpha extends OpMode {
         pastBack = currentBack;
         
         currentA = gamepad1.a;
-        if(currentA && !pastA) {
+        /*if(currentA && !pastA) {
             claw.toggle();
-        }
+        }*/
         pastA = currentA;
         
         rightTriggerValue = gamepad1.right_trigger;

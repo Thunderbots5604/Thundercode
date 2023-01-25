@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team5604.robotparts;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class AutoDriveTrain extends DriveTrain {
+public class AutoDriveTrainGyro extends DriveTrain {
 
     //Target Location for where we're going to
     private double[] targetLocation;
@@ -14,8 +14,11 @@ public class AutoDriveTrain extends DriveTrain {
     private final double Y_SCALE;
     private final double ANGLE_SCALE;
 
+    private Gyro gyro;
+    private double zeroAngle;
 
-    public AutoDriveTrain(HardwareMap map, String flMotor, String frMotor, String blMotor, String brMotor, double[] epsilons, double X_SCALE, double Y_SCALE, double ANGLE_SCALE) {
+
+    public AutoDriveTrainGyro(HardwareMap map, String flMotor, String frMotor, String blMotor, String brMotor, double[] epsilons, double X_SCALE, double Y_SCALE, double ANGLE_SCALE, Gyro gyro) {
         super(map, flMotor, frMotor, blMotor, brMotor);
         targetLocation = new double[] {0, 0, 0};
         currentLocation = new double[] {0, 0, 0};
@@ -24,6 +27,8 @@ public class AutoDriveTrain extends DriveTrain {
         this.Y_SCALE = Y_SCALE;
         this.ANGLE_SCALE = ANGLE_SCALE;
         setZeroTicks();
+        this.gyro = gyro;
+        zeroAngle = gyro.getHeading();
     }
 
     public void setTargetLocation(double[] location) {
@@ -55,9 +60,14 @@ public class AutoDriveTrain extends DriveTrain {
         }
 
         targetDirections = rotateDirections(positionDifference(targetLocation, currentLocation), -currentLocation[2]);
-        double scale = (1 / Math.PI) * Math.sqrt(targetDirections[0] * targetDirections[0] + targetDirections[1] * targetDirections[1]);
+        double slowFactor = Math.sqrt(targetDirections[0] * targetDirections[0] + targetDirections[1] * targetDirections[1]);
+        double scale = (1 / Math.PI) * slowFactor;
         targetDirections[0] /= scale;
         targetDirections[1] /= scale;
+        if(slowFactor < X_SCALE * 200 + Y_SCALE * 200) {
+            targetDirections[0] *= slowFactor / (X_SCALE * 200 + Y_SCALE * 200);
+            targetDirections[1] *= slowFactor / (X_SCALE * 200 + Y_SCALE * 200);
+        }
 
         targetDirections[2] *= -1;
         calculatePower(targetDirections);
@@ -71,17 +81,16 @@ public class AutoDriveTrain extends DriveTrain {
     public void updateCurrentLocation() {
         int[] tickChange = getTickChange();
         setZeroTicks();
-        double[] relativeChange = new double[3];
+        double[] relativeChange = new double[2];
 
         relativeChange[0] = X_SCALE * (tickChange[0] - tickChange[1] - tickChange[2] + tickChange[3]);
         relativeChange[1] = Y_SCALE * (tickChange[0] + tickChange[1] + tickChange[2] + tickChange[3]);
-        relativeChange[2] = ANGLE_SCALE * (tickChange[0] - tickChange[1] + tickChange[2] - tickChange[3]);
 
-        double[] absoluteChange = rotateDirections(relativeChange, currentLocation[2]);
+        double[] absoluteChange = rotateDirections(new double[] {relativeChange[0], relativeChange[1], currentLocation[2]}, currentLocation[2]);
 
         currentLocation[0] += absoluteChange[0];
         currentLocation[1] += absoluteChange[1];
-        currentLocation[2] = addAngle(currentLocation[2], absoluteChange[2]);
+        currentLocation[2] = addAngle(gyro.getHeading(), -zeroAngle);
     }
 
     public double[] rotateDirections(double[] directions, double angle) {

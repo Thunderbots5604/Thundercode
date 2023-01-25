@@ -8,8 +8,8 @@ import org.firstinspires.ftc.team5604.robotparts.DriveTrain;
 import org.firstinspires.ftc.team5604.robotparts.Armon2;
 import org.firstinspires.ftc.team5604.robotparts.Claw;
 
-@TeleOp(name = "Alpha", group = "competition")
-public class TeleOpAlpha extends OpMode {
+@TeleOp(name = "Closed Claw", group = "outreach")
+public class TeleOpClosedClaw extends OpMode {
     DriveTrain drive;
     Armon2 arm;
     Claw claw;
@@ -41,7 +41,7 @@ public class TeleOpAlpha extends OpMode {
     public void init() {
         drive = new DriveTrain(hardwareMap, "fl", "fr", "bl", "br");
         arm = new Armon2(hardwareMap, "am1", "am2", 10, 1150, 0.05);
-        claw = new Claw(hardwareMap, "claw", 0.85, 1);
+        claw = new Claw(hardwareMap, "claw", 0.85, 0.95);
         doneInit = true;
     }
 
@@ -49,6 +49,8 @@ public class TeleOpAlpha extends OpMode {
     public void loop() {
         telemetry.addData("position", Double.toString(arm.getCurrentPosition() - arm.getModifier()));
         telemetry.update();
+        
+        claw.close();
         
         currentB = gamepad1.b;
         if(currentB && !pastB) {
@@ -70,9 +72,9 @@ public class TeleOpAlpha extends OpMode {
         pastBack = currentBack;
         
         currentA = gamepad1.a;
-        if(currentA && !pastA) {
+        /*if(currentA && !pastA) {
             claw.toggle();
-        }
+        }*/
         pastA = currentA;
         
         rightTriggerValue = gamepad1.right_trigger;
